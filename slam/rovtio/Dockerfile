@@ -8,7 +8,6 @@ WORKDIR $PROJECT_DIR
 
 RUN apt-get update && \
     apt install -y \
-    git \
     python3-catkin-tools 
 
 COPY $ALGORITHM_FOLDER .
