@@ -13,12 +13,12 @@ roscore
 ## Building Docker Image
 Build docker image using `Dockerfile`:
 ```
-docker build -t rovtio_image -f Dockerfile ..
+docker build -t rovtio -f Dockerfile ..
 ```
 ## Running Docker Container
 To run the container use the following command:
 ```
-docker run --net=host  -it --env DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix rovtio
+docker run --net=host -it --env DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix rovtio
 ```
 ## Launch the rosbag and rviz
 ```
