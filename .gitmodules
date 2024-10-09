@@ -1,0 +1,9 @@
+[submodule "slam/rovtio/src/kindr"]
+	path = slam/rovtio/src/kindr
+	url = https://github.com/ethz-asl/kindr.git
+[submodule "slam/rovtio/src/rovio"]
+	path = slam/rovtio/src/rovio
+	url = https://github.com/ethz-asl/rovio.git
+[submodule "slam/rovtio/src/rovtio"]
+	path = slam/rovtio/src/rovtio
+	url = https://github.com/ntnu-arl/rovtio.git
