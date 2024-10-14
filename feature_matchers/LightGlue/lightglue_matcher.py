@@ -2,12 +2,12 @@ import sys
 from pathlib import Path
 
 import torch
-from models.lightglue import LightGlue
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from feature_detectors.SuperPoint.superpoint import SuperPoint
 
 from feature_matchers.common.feature_matcher import FeatureMatcher
+from feature_matchers.LightGlue.models.lightglue import LightGlue
 
 
 class LightGlueFeatureMatcher(FeatureMatcher):

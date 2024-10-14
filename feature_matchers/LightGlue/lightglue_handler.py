@@ -16,7 +16,7 @@ class LightGlueDataHandler(DataHandler):
         output_path: Path,
     ):
         super().__init__(input_path, output_path)
-        output_path.mkdir(exist_ok=True)
+        Path(output_path).mkdir(exist_ok=True)
 
     def read_image(self, filename):
         path_to_image = Path(self.input_path) / filename
@@ -47,14 +47,21 @@ class LightGlueDataHandler(DataHandler):
         for (x0, y0), (x1, y1) in zip(mkpts0, mkpts1):
             cv2.line(
                 out,
-                (x0, y0),
-                (x1 + margin + W0, y1),
-                color=(255, 0, 0),
+                (int(x0), int(y0)),
+                (int(x1 + margin + W0), int(y1)),
+                color=(0, 255, 0),
                 thickness=1,
                 lineType=cv2.LINE_AA,
             )
-            cv2.circle(out, (x0, y0), 2, (255, 0, 0), -1, lineType=cv2.LINE_AA)
             cv2.circle(
-                out, (x1 + margin + W0, y1), 2, (255, 0, 0), -1, lineType=cv2.LINE_AA
+                out, (int(x0), int(y0)), 2, (0, 255, 0), -1, lineType=cv2.LINE_AA
+            )
+            cv2.circle(
+                out,
+                (int(x1 + margin + W0), int(y1)),
+                2,
+                (0, 255, 0),
+                -1,
+                lineType=cv2.LINE_AA,
             )
         cv2.imwrite(str(Path(self.output_path) / matches["path"]), out)

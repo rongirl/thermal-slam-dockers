@@ -12,7 +12,7 @@ class ORBDataHandler(DataHandler):
         output_path: Path,
     ):
         super().__init__(input_path, output_path)
-        output_path.mkdir(exist_ok=True)
+        Path(output_path).mkdir(exist_ok=True)
 
     def read_image(self, filename):
         path_to_image = Path(self.input_path) / filename

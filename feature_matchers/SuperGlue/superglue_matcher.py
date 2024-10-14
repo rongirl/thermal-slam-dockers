@@ -1,14 +1,13 @@
 import sys
 from pathlib import Path
 
-import matplotlib.cm as cm
 import torch
-from models.superglue import SuperGlue
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from feature_detectors.SuperPoint.superpoint import SuperPoint
 
 from feature_matchers.common.feature_matcher import FeatureMatcher
+from feature_matchers.SuperGlue.models.superglue import SuperGlue
 
 
 class SuperGlueFeatureMatcher(FeatureMatcher):
@@ -47,10 +46,8 @@ class SuperGlueFeatureMatcher(FeatureMatcher):
             for k, v in prediction.items()
         }
         kpts0, kpts1 = prediction["keypoints0"], prediction["keypoints1"]
-        confidence = prediction["matching_scores0"]
         matches = prediction["matches0"]
         valid = matches > -1
-        color = cm.jet(confidence[valid])
         mkpts0 = kpts0[valid]
         mkpts1 = kpts1[matches[valid]]
-        return mkpts0, mkpts1, kpts0, kpts1, color
+        return mkpts0, mkpts1
