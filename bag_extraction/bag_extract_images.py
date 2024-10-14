@@ -10,15 +10,14 @@ VISUAL_CAM_TOPIC = "/cam_blackfly/cam_blackfly"
 THERMAL_CAM_TOPIC = "/tau_nodelet/thermal_image"
 
 
-def equalize_histogram(img):
+def equalize_histogram(img, cummulative_pixels):
     intensity_min = 0
-    intensity_max = 65535
-    hist_size = intensity_max - intensity_min + 1
+    intensity_max = np.iinfo(np.uint16).max - 1
+    hist_size = intensity_max - intensity_min
     range_values = np.array([intensity_min, intensity_max], dtype=np.float32)
 
     histogram = cv2.calcHist([img], [0], None, [hist_size], range_values)
 
-    cummulative_pixels = 10000
     bin_index = 1
     sum_pixels = 0
     while sum_pixels < cummulative_pixels and bin_index < hist_size:
@@ -41,7 +40,7 @@ def equalize_histogram(img):
     return out_img
 
 
-def extract_images(reader, topics, output_path):
+def extract_images(reader, topics, output_path, cummulative_pixels):
     bridge = CvBridge()
     for i, topic in enumerate(topics):
         camera_folder = output_path / f"cam{topic.replace('/', '_')}"
@@ -56,7 +55,7 @@ def extract_images(reader, topics, output_path):
             path_to_image = camera_folder / f"{time}.jpg"
             cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding=msg.encoding)
             if topic == THERMAL_CAM_TOPIC:
-                cv_image = equalize_histogram(cv_image)
+                cv_image = equalize_histogram(cv_image, cummulative_pixels)
             cv2.imwrite(str(path_to_image), cv_image)
 
 
@@ -74,10 +73,21 @@ if __name__ == "__main__":
         type=Path,
         help="Path to the output directory",
     )
+    parser.add_argument(
+        "--cummulative_pixels",
+        type=int,
+        default=10000,
+        help="Minimum count of pixels",
+    )
     args = parser.parse_args()
     bag_path = args.input_file
     output_path = args.output_dir
     output_path.mkdir(exist_ok=True)
     with AnyReader([bag_path]) as reader:
         print(f"Extracting images from {bag_path}")
-        extract_images(reader, [VISUAL_CAM_TOPIC, THERMAL_CAM_TOPIC], output_path)
+        extract_images(
+            reader,
+            [VISUAL_CAM_TOPIC, THERMAL_CAM_TOPIC],
+            output_path,
+            args.cummulative_pixels,
+        )
