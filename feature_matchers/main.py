@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+import torch
+
 from LightGlue.lightglue_handler import LightGlueDataHandler
 from LightGlue.lightglue_matcher import LightGlueFeatureMatcher
 from ORB_matcher.ORB_handler import ORBDataHandler
@@ -9,6 +11,8 @@ from SIFT_matcher.SIFT_handler import SIFTDataHandler
 from SIFT_matcher.SIFT_matcher import SIFTFeatureMatcher
 from SuperGlue.superglue_handler import SuperGlueDataHandler
 from SuperGlue.superglue_matcher import SuperGlueFeatureMatcher
+
+torch.set_grad_enabled(False)
 
 
 def match_with_superglue_lightglue(pairs, data_handler, matcher):
