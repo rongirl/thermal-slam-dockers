@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import List
 
 import cv2
 import numpy as np
@@ -10,14 +11,10 @@ from feature_matchers.common.data_handler import DataHandler
 
 
 class SuperGlueDataHandler(DataHandler):
-    def __init__(
-        self,
-        input_path: Path,
-        output_path: Path,
-    ):
+    def __init__(self, input_path: Path, output_path: Path, resize: List[int]):
         super().__init__(input_path, output_path)
         Path(output_path).mkdir(exist_ok=True)
-        self.resize = [640, 480]
+        self.resize = resize
 
     def _resize_image(self, image):
         return cv2.resize(
