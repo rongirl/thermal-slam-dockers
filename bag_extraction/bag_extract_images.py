@@ -40,7 +40,12 @@ def equalize_histogram(img, cummulative_pixels):
     return out_img
 
 
-def extract_images(reader, topics, output_path, cummulative_pixels):
+def clahe(image):
+    clahe = cv2.createCLAHE(clipLimit=200.0, tileGridSize=(8, 8))
+    return clahe.apply(image)
+
+
+def extract_images(reader, topics, output_path, histogram, cummulative_pixels):
     bridge = CvBridge()
     for i, topic in enumerate(topics):
         camera_folder = output_path / f"cam{topic.replace('/', '_')}"
@@ -52,10 +57,13 @@ def extract_images(reader, topics, output_path, cummulative_pixels):
             time = str(msg.header.stamp.sec) + str(msg.header.stamp.nanosec).rjust(
                 9, "0"
             )
-            path_to_image = camera_folder / f"{time}.jpg"
+            path_to_image = camera_folder / f"{time}.png"
             cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding=msg.encoding)
             if topic == THERMAL_CAM_TOPIC:
-                cv_image = equalize_histogram(cv_image, cummulative_pixels)
+                if histogram == "default":
+                    cv_image = equalize_histogram(cv_image, cummulative_pixels)
+                else:
+                    cv_image = clahe(cv_image)
             cv2.imwrite(str(path_to_image), cv_image)
 
 
@@ -74,11 +82,20 @@ if __name__ == "__main__":
         help="Path to the output directory",
     )
     parser.add_argument(
+        "-hist",
+        "--histogram",
+        choices={"default", "clahe"},
+        default="default",
+        type=str,
+        help="Normalization method",
+    )
+    parser.add_argument(
         "--cummulative_pixels",
         type=int,
         default=10000,
         help="Minimum count of pixels",
     )
+
     args = parser.parse_args()
     bag_path = args.input_file
     output_path = args.output_dir
@@ -89,5 +106,6 @@ if __name__ == "__main__":
             reader,
             [VISUAL_CAM_TOPIC, THERMAL_CAM_TOPIC],
             output_path,
+            args.histogram,
             args.cummulative_pixels,
         )
