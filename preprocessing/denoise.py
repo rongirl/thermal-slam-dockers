@@ -11,7 +11,7 @@ def bandpass_filter(image, lower_border, upper_border):
     M, N = image.shape
     u = np.arange(M)
     v = np.arange(N)
-    U, V = np.meshgrid(u, v, indexing='ij')
+    U, V = np.meshgrid(u, v, indexing="ij")
     D = np.sqrt((U - M / 2) ** 2 + (V - N / 2) ** 2)
     H = np.logical_and(lower_border <= D, D <= upper_border).astype(np.float32)
     Gshift = Fshift * H
@@ -36,7 +36,10 @@ if __name__ == "__main__":
         help="Path to the directory that contains the images",
     )
     parser.add_argument(
-        "-o", "--output_dir", type=str, help="Path to the directory in which the results are written"
+        "-o",
+        "--output_dir",
+        type=str,
+        help="Path to the directory in which the results are written",
     )
     parser.add_argument(
         "-f",
@@ -86,8 +89,7 @@ if __name__ == "__main__":
     output_dir.mkdir(exist_ok=True)
     for image in images:
         name = image.name
-        img = cv2.imread(str(image), 0)
-        print(img.shape)
+        img = cv2.imread(str(image), cv2.IMREAD_GRAYSCALE)
         if args.filter == "bilateral":
             img = bilateral_filter(img, args.d, args.color, args.space)
         else:
