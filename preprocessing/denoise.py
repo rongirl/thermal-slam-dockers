@@ -9,14 +9,11 @@ def bandpass_filter(image, lower_border, upper_border):
     F = np.fft.fft2(image)
     Fshift = np.fft.fftshift(F)
     M, N = image.shape
-    H = np.zeros((M, N), dtype=np.float32)
-    for u in range(M):
-        for v in range(N):
-            D = np.sqrt((u - M / 2) ** 2 + (v - N / 2) ** 2)
-            if lower_border <= D <= upper_border:
-                H[u, v] = 1
-            else:
-                H[u, v] = 0
+    u = np.arange(M)
+    v = np.arange(N)
+    U, V = np.meshgrid(u, v, indexing='ij')
+    D = np.sqrt((U - M / 2) ** 2 + (V - N / 2) ** 2)
+    H = np.logical_and(lower_border <= D, D <= upper_border).astype(np.float32)
     Gshift = Fshift * H
     G = np.fft.ifftshift(Gshift)
     return np.abs(np.fft.ifft2(G))
@@ -85,12 +82,15 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     images = Path(args.input_dir).iterdir()
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(exist_ok=True)
     for image in images:
         name = image.name
-        img = cv2.imread(str(image))
+        img = cv2.imread(str(image), 0)
+        print(img.shape)
         if args.filter == "bilateral":
             img = bilateral_filter(img, args.d, args.color, args.space)
         else:
             img = bandpass_filter(img, args.lower, args.upper)
-        output_path = Path(args.output_dir) / name
+        output_path = output_dir / name
         cv2.imwrite(str(output_path), img)
